@@ -1,5 +1,4 @@
 import React from "react";
-import { Pane } from "./components/pane";
 
 const App: React.FC = () => {
   return (
@@ -11,9 +10,7 @@ const App: React.FC = () => {
       </header>
       <div className="flex-1">
         <div className="container flex py-6">
-          <div className=" flex-[2_2_0%]">
-            <Pane />
-          </div>
+          <div className=" flex-[2_2_0%]"></div>
           <div className=" flex-[3_3_0%]">xxxx</div>
         </div>
       </div>
