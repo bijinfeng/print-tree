@@ -20,7 +20,7 @@ const PrintContent = (props: PrintContentProps) => {
       .join("\n");
   }, [props.data]);
 
-  return <div>{printText}</div>;
+  return <div className="whitespace-pre-line">{printText}</div>;
 };
 
 export default PrintContent;

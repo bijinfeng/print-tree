@@ -7,11 +7,7 @@ import { InsideTreeNode } from "@/interface";
 const TreeEdit: React.FC = () => {
   const { state } = useTreeContext();
 
-  return (
-    <div>
-      <TreeGroup data={state} />
-    </div>
-  );
+  return <TreeGroup data={state} />;
 };
 
 interface ITreeGroupProps {
@@ -19,7 +15,7 @@ interface ITreeGroupProps {
 }
 const TreeGroup = ({ data }: ITreeGroupProps) => {
   return (
-    <>
+    <div className=" space-y-1">
       {data.map((item) => {
         if (item.type === "file") {
           return <TreeFile key={item.id} data={item} />;
@@ -35,7 +31,7 @@ const TreeGroup = ({ data }: ITreeGroupProps) => {
 
         return null;
       })}
-    </>
+    </div>
   );
 };
 
