@@ -1,9 +1,16 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 import { InsideTreeNode, TreeNode } from "@/interface";
 import { tranformTreeNode } from "@/lib/utils";
 
 export interface ITreeState {
   state: InsideTreeNode[];
+  onNameEdit: (node: InsideTreeNode, name: string) => void;
 }
 
 const TreeContext = createContext<ITreeState>({} as ITreeState);
@@ -24,8 +31,14 @@ const TreeProvider = (props: React.PropsWithChildren<ITreeProviderProps>) => {
     setState(nextState);
   }, [data]);
 
+  const onNameEdit = useCallback<ITreeState["onNameEdit"]>((node, name) => {
+    node.name = name;
+  }, []);
+
   return (
-    <TreeContext.Provider value={{ state }}>{children}</TreeContext.Provider>
+    <TreeContext.Provider value={{ state, onNameEdit }}>
+      {children}
+    </TreeContext.Provider>
   );
 };
 

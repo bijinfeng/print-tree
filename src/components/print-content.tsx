@@ -9,15 +9,13 @@ interface PrintContentProps {
 
 const PrintContent = (props: PrintContentProps) => {
   const printText = useMemo(() => {
-    return props.data
-      .map((it) =>
-        printTree(
-          it,
-          (node) => node.name,
-          (node) => node.files
-        )
-      )
-      .join("\n");
+    const root: TreeNode = { type: "folder", name: "head", files: props.data };
+
+    return printTree(
+      root,
+      (node) => node.name,
+      (node) => node.files
+    );
   }, [props.data]);
 
   return <div className="whitespace-pre-line">{printText}</div>;

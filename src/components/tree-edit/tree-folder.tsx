@@ -8,20 +8,31 @@ import {
   AiOutlineEdit,
 } from "react-icons/ai";
 
-import { TreeNode } from "@/interface";
+import { useTreeContext } from "./context";
+import { TreeInput } from "./tree-input";
+import { InsideTreeNode } from "@/interface";
 
 interface ITreeFolder {
-  data: TreeNode;
+  data: InsideTreeNode;
 }
 
 export const TreeFolder = (props: React.PropsWithChildren<ITreeFolder>) => {
   const { children, data } = props;
+  const { onNameEdit } = useTreeContext();
   const [isOpen, setIsOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
-  const handleFolderRename = () => {};
+  const handleFolderRename = () => {
+    setIsEditing(true);
+  };
   const handleFileCreation = () => {};
   const handleFolderCreation = () => {};
   const commitDeleteFolder = () => {};
+
+  const handleSubmit = (name: string) => {
+    setIsEditing(false);
+    onNameEdit(data, name);
+  };
 
   return (
     <div className=" space-y-1">
@@ -30,17 +41,24 @@ export const TreeFolder = (props: React.PropsWithChildren<ITreeFolder>) => {
         onClick={() => setIsOpen(!isOpen)}
       >
         {isOpen ? <AiOutlineFolderOpen /> : <AiOutlineFolder />}
-        <span>{data.name}</span>
+        <TreeInput
+          name={data.name}
+          isEditing={isEditing}
+          onCancel={() => setIsEditing(false)}
+          onSubmit={handleSubmit}
+        />
 
-        <div
-          className="absolute right-0 flex items-center gap-1 invisible group-hover:visible"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <AiOutlineEdit onClick={handleFolderRename} />
-          <AiOutlineFileAdd onClick={handleFileCreation} />
-          <AiOutlineFolderAdd onClick={handleFolderCreation} />
-          <AiOutlineDelete onClick={commitDeleteFolder} />
-        </div>
+        {!isEditing && (
+          <div
+            className="absolute right-0 flex items-center gap-1 invisible group-hover:visible"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <AiOutlineEdit onClick={handleFolderRename} />
+            <AiOutlineFileAdd onClick={handleFileCreation} />
+            <AiOutlineFolderAdd onClick={handleFolderCreation} />
+            <AiOutlineDelete onClick={commitDeleteFolder} />
+          </div>
+        )}
       </div>
       {isOpen && <div className=" border-l pl-5">{children}</div>}
     </div>
