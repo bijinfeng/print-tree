@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 
 interface TreeInputProps {
   isEditing: boolean;
-  name: string;
+  name?: string;
   onSubmit: (name: string) => void;
   onCancel: () => void;
 }
@@ -15,7 +15,8 @@ export const TreeInput = (props: TreeInputProps) => {
   const handleSubmit = () => {
     const value = inputRef.current?.value;
 
-    value ? onSubmit(value) : onCancel();
+    value && onSubmit(value);
+    onCancel();
   };
 
   const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (

@@ -9,7 +9,12 @@ interface PrintContentProps {
 
 const PrintContent = (props: PrintContentProps) => {
   const printText = useMemo(() => {
-    const root: TreeNode = { type: "folder", name: "head", files: props.data };
+    const root: TreeNode = {
+      id: "0000",
+      type: "folder",
+      name: "head",
+      files: props.data,
+    };
 
     return printTree(
       root,

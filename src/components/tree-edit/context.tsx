@@ -1,16 +1,15 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  useCallback,
-} from "react";
-import { InsideTreeNode, TreeNode } from "@/interface";
-import { tranformTreeNode } from "@/lib/utils";
+import React, { createContext, useContext, useCallback } from "react";
+import { useControllableValue } from "ahooks";
+import { cloneDeep } from "lodash-es";
+import { v4 } from "uuid";
+
+import { TreeNode } from "@/interface";
 
 export interface ITreeState {
-  state: InsideTreeNode[];
-  onNameEdit: (node: InsideTreeNode, name: string) => void;
+  state: TreeNode[];
+  onNameEdit: (node: TreeNode, name: string) => void;
+  onAdd: (node: TreeNode, name: string, type: TreeNode["type"]) => void;
+  onDelete: (node: TreeNode) => void;
 }
 
 const TreeContext = createContext<ITreeState>({} as ITreeState);
@@ -18,41 +17,59 @@ const TreeContext = createContext<ITreeState>({} as ITreeState);
 export const useTreeContext = () => useContext(TreeContext);
 
 export interface ITreeProviderProps {
-  data?: TreeNode[];
+  value: TreeNode[];
+  onChange: (value: TreeNode[]) => void;
 }
 
 const TreeProvider = (props: React.PropsWithChildren<ITreeProviderProps>) => {
-  const { children, data } = props;
+  const { children } = props;
 
-  const [state, setState] = useState<InsideTreeNode[]>([]);
+  const [state, setState] = useControllableValue<TreeNode[]>(props);
 
-  useEffect(() => {
-    const nextState = (data ?? []).map((it) => tranformTreeNode(it));
-    setState(nextState);
-  }, [data]);
+  const onNameEdit = useCallback<ITreeState["onNameEdit"]>(
+    (node, name) => {
+      node.name = name;
+      setState((state) => cloneDeep(state));
+    },
+    [setState]
+  );
 
-  const onNameEdit = useCallback<ITreeState["onNameEdit"]>((node, name) => {
-    node.name = name;
-  }, []);
+  const onAdd = useCallback<ITreeState["onAdd"]>(
+    (node, name, type) => {
+      if (node.type === "folder") {
+        node.files = node.files ?? [];
+        node.files.push({ id: v4(), name, type, parentNode: node });
+        setState((state) => cloneDeep(state));
+      }
+    },
+    [setState]
+  );
+
+  const onDelete = useCallback<ITreeState["onDelete"]>(
+    (node) => {
+      if (node?.parentNode?.files) {
+        node.parentNode.files = node.parentNode.files.filter(
+          (file) => file.id !== node.id
+        );
+        setState((state) => cloneDeep(state));
+      } else {
+        setState((state) => state.filter((file) => file.id !== node.id));
+      }
+    },
+    [setState]
+  );
 
   return (
-    <TreeContext.Provider value={{ state, onNameEdit }}>
+    <TreeContext.Provider value={{ state, onNameEdit, onAdd, onDelete }}>
       {children}
     </TreeContext.Provider>
   );
 };
 
-interface TreeEditProps {
-  value: TreeNode[];
-  onChange: (value: TreeNode[]) => void;
-}
-
 export const TreeProviderHOC = (componet: React.FC) => {
-  return (props: TreeEditProps) => {
+  return (props: ITreeProviderProps) => {
     return (
-      <TreeProvider data={props.value}>
-        {React.createElement(componet)}
-      </TreeProvider>
+      <TreeProvider {...props}>{React.createElement(componet)}</TreeProvider>
     );
   };
 };

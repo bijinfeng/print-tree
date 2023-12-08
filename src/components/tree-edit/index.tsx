@@ -2,7 +2,7 @@ import React from "react";
 import { TreeProviderHOC, useTreeContext } from "./context";
 import { TreeFile } from "./tree-file";
 import { TreeFolder } from "./tree-folder";
-import { InsideTreeNode } from "@/interface";
+import { TreeNode } from "@/interface";
 
 const TreeEdit: React.FC = () => {
   const { state } = useTreeContext();
@@ -11,7 +11,7 @@ const TreeEdit: React.FC = () => {
 };
 
 interface ITreeGroupProps {
-  data: InsideTreeNode[];
+  data: TreeNode[];
 }
 const TreeGroup = ({ data }: ITreeGroupProps) => {
   return (
